@@ -101,6 +101,7 @@ def _render_file(filename, variables, undefined):
 def _render(template_name, loader, variables, undefined):
     env = jinja2.Environment(loader=loader, undefined=undefined)
     env.filters['from_json'] = from_json
+    env.filters['load_file'] = load_file
 
     template = env.get_template(template_name)
     template.globals['environment'] = get_environment
@@ -126,6 +127,11 @@ def get_environment(context, prefix=''):
 @jinja2.evalcontextfilter
 def from_json(eval_ctx, value):
     return json.loads(value)
+    
+@jinja2.evalcontextfilter
+def load_file(eval_ctx, value):
+    with open(value) as file:
+        return file.read()
 
 class Fatal(Exception):
     pass
